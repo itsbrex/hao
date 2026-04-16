@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import typing
+from collections.abc import Generator
+from re import Pattern
 
 import regex
 
@@ -19,7 +20,7 @@ def join_items(items, prefix='', suffix=''):
     return r'|'.join([f'(?:{prefix}{_item.strip()}{suffix})' for _item in items if len(_item) > 0])
 
 
-def split_with_sep(text: str, p: typing.Pattern, sep_as_ending: bool = True) -> typing.Generator[str, None, None]:
+def split_with_sep(text: str, p: Pattern, sep_as_ending: bool = True) -> Generator[str, None, None]:
     if text is None or p is None:
         return None
     i = 0

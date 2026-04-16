@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
-from typing import Callable, List, Optional, Union
+from collections.abc import Callable
 
 import regex
 
@@ -28,7 +28,7 @@ def parse_known_args(args=None, namespace=None):
     return _PARSER.parse_known_args(args, namespace)
 
 
-def add_by_function(addon_fn: Optional[Union[List[Callable], Callable]]):
+def add_by_function(addon_fn: list[Callable] | Callable | None):
     if addon_fn is None:
         return {}
     _names_before = set([action.dest for action in getattr(_PARSER, '_actions')])

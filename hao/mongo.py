@@ -31,8 +31,6 @@ mongo_other = Mongo('some-other')
 item1 = mongo.find_by_id('col_name', _id)
 item2 = mongo.find_one('col_name', {'field': 'val'})
 """
-from typing import List, Optional, Union
-
 from bson import ObjectId
 from pymongo import MongoClient, ReturnDocument
 from pymongo.collection import Collection
@@ -70,7 +68,7 @@ def connect(host=None,
     return MongoClient(host, port, document_class, tz_aware, connect_now, type_registry, **params)
 
 
-def ensure_id_type(query: Union[str, ObjectId, dict]):
+def ensure_id_type(query: str | ObjectId | dict):
     if query is None:
         return None
     if isinstance(query, ObjectId):
@@ -116,19 +114,19 @@ class Mongo(object, metaclass=singleton.Multiton):
     def is_collection_exist(self, collection_name):
         return len(self.db.list_collection_names(filter={"name": collection_name})) > 0
 
-    def count(self, col_name: str, query: Optional[dict] = None):
+    def count(self, col_name: str, query: dict | None = None):
         query = ensure_id_type(query)
         return self.col(col_name).count_documents(query or {})
 
-    def find_by_id(self, col_name: str, _id: Union[str, ObjectId]):
+    def find_by_id(self, col_name: str, _id: str | ObjectId):
         _id = ensure_id_type(_id)
         return self.col(col_name).find_one({'_id': _id})
 
-    def find_one(self, col_name: str, query: Optional[dict] = None, projection: Optional[dict] = None, **kwargs):
+    def find_one(self, col_name: str, query: dict | None = None, projection: dict | None = None, **kwargs):
         query = ensure_id_type(query)
         return self.col(col_name).find_one(query or {}, projection, **kwargs)
 
-    def find(self, col_name: str, query: Optional[dict] = None, projection: Optional[dict] = None, **kwargs):
+    def find(self, col_name: str, query: dict | None = None, projection: dict | None = None, **kwargs):
         query = ensure_id_type(query)
         return self.col(col_name).find(query or {}, projection, **kwargs)
 
@@ -156,7 +154,7 @@ class Mongo(object, metaclass=singleton.Multiton):
             data = {'$set': data}
         return self.col(col_name).update_many(query, data)
 
-    def delete_by_id(self, col_name: str, _id: Union[str, ObjectId]):
+    def delete_by_id(self, col_name: str, _id: str | ObjectId):
         _id = ensure_id_type(_id)
         return self.col(col_name).delete_one({'_id': _id})
 
@@ -177,7 +175,7 @@ class Mongo(object, metaclass=singleton.Multiton):
     def drop(self, col_name):
         return self.col(col_name).drop()
 
-    def copy_col(self, col_name_src: str, col_name_tgt: str, query: Optional[dict] = None):
+    def copy_col(self, col_name_src: str, col_name_tgt: str, query: dict | None = None):
         assert col_name_src is not None
         assert col_name_tgt is not None
         assert col_name_src != col_name_tgt
@@ -192,7 +190,7 @@ class Mongo(object, metaclass=singleton.Multiton):
     def find_one_and_replace(self, col_name: str, query: dict, replacement: dict, return_document=ReturnDocument.AFTER, **kwargs):
         return self.col(col_name).find_one_and_replace(query, replacement, return_document=return_document, **kwargs)
 
-    def find_one_and_delete(self, col_name: str, query: dict, projection: Optional[dict] = None, **kwargs):
+    def find_one_and_delete(self, col_name: str, query: dict, projection: dict | None = None, **kwargs):
         return self.col(col_name).find_one_and_delete(query, projection=projection, **kwargs)
 
     def list_collections(self, filter=None, count=False, session=None, **kwargs):
@@ -206,7 +204,7 @@ class Mongo(object, metaclass=singleton.Multiton):
         sizes = {}
         with self.client.start_session() as session:
             collection_names = list(sorted(self.db.list_collection_names()))
-            print(f"collections:")
+            print("collections:")
             for col_name in collection_names:
                 size = self.db.command({"collstats": col_name, 'scale': 1024 * 1024}, session=session).get('size')
                 sizes[col_name] = f"{size} MB"
@@ -224,7 +222,7 @@ class Mongo(object, metaclass=singleton.Multiton):
                     username: str,
                     password: str,
                     db: str,
-                    roles: Optional[List[str]] = None):
+                    roles: list[str] | None = None):
         """
         db.createUser(
           {

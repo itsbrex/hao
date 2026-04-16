@@ -34,7 +34,7 @@ with PG('profile-name', cursor='dict') as db:
     ...
 """
 import secrets
-from typing import Literal, Optional, Union
+from typing import Literal
 
 import psycopg
 from dbutils.pooled_db import PooledDB
@@ -110,31 +110,31 @@ class PG:
     def cursor(self, cursor: Literal['tuple', 'dict', 'namedtuple'] = 'tuple') -> Cursor:
         return self._conn.cursor(row_factory=self._CURSORS.get(cursor))
 
-    def execute(self, sql: str, params: Optional[Union[list, tuple]] = None, *, commit: bool = False) -> Cursor:
+    def execute(self, sql: str, params: list | tuple | None = None, *, commit: bool = False) -> Cursor:
         self._cursor.execute(sql, params)
         if commit:
             self.commit()
         return self._cursor
 
-    def executemany(self, sql: str, params: Optional[Union[list, tuple]] = None, *, commit: bool = False) -> Cursor:
+    def executemany(self, sql: str, params: list | tuple | None = None, *, commit: bool = False) -> Cursor:
         self._cursor.executemany(sql, params)
         if commit:
             self.commit()
         return self._cursor
 
-    def fetchone(self, sql: str, params: Optional[Union[list, tuple]] = None, *, commit: bool = False):
+    def fetchone(self, sql: str, params: list | tuple | None = None, *, commit: bool = False):
         self._cursor.execute(sql, params)
         if commit:
             self.commit()
         return self._cursor.fetchone()
 
-    def fetchall(self, sql: str, params: Optional[Union[list, tuple]] = None, *, commit: bool = False):
+    def fetchall(self, sql: str, params: list | tuple | None = None, *, commit: bool = False):
         self._cursor.execute(sql, params)
         if commit:
             self.commit()
         return self._cursor.fetchall()
 
-    def fetch(self, sql: str, params: Optional[Union[list, tuple]] = None, batch=2000, *, commit: bool = False):
+    def fetch(self, sql: str, params: list | tuple | None = None, batch=2000, *, commit: bool = False):
         name = f"{strings.sha256(sql)}-{hash(','.join(params)) if params else 0}-{secrets.token_hex()}"
         cursor = self._conn.cursor(name=name, row_factory=self._row_factory)
         try:

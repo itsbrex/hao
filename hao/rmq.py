@@ -39,7 +39,6 @@ import threading
 import time
 import uuid
 from dataclasses import dataclass
-from typing import Dict, Optional, Union
 
 from . import config, jsons, logs
 
@@ -141,15 +140,15 @@ class Msg:
 class Request:
     def __init__(self):
         self._event = threading.Event()
-        self._data: Optional[Msg] = None
-        self._error: Optional[Exception] = None
+        self._data: Msg | None = None
+        self._error: Exception | None = None
 
-    def set_response(self, *, data: Optional[Msg] = None, error: Optional[Exception] = None):
+    def set_response(self, *, data: Msg | None = None, error: Exception | None = None):
         self._data = data
         self._error = error
         self._event.set()
 
-    def get(self, timeout=0.1) -> (Optional[Msg], Optional[Exception]):
+    def get(self, timeout=0.1) -> (Msg | None, Exception | None):
         self._event.wait(timeout)
         return self._data, self._error
 
@@ -186,9 +185,9 @@ class RMQ:
         self.profile = profile
         self.__conf = config.get(f"rmq.{self.profile}", {})
         assert len(self.__conf) > 0, f'rmq profile not configured `rmq.{self.profile}`'
-        self._conn: Optional[socket.socket] = None
+        self._conn: socket.socket | None = None
         self._timeout = self.__conf.get('timeout', 30)
-        self._requests: Dict[str, Request] = {}
+        self._requests: dict[str, Request] = {}
         self._stopped = threading.Event()
         self.__lock__ = threading.Lock()
         self._receive_thread = threading.Thread(target=self._receive_loop, daemon=True)
@@ -258,7 +257,7 @@ class RMQ:
         if not self._heartbeat_thread.is_alive():
             self._heartbeat_thread.start()
 
-    def request(self, event: Event, payload: bytes, timeout = 5, max_retries = 3) -> (Optional[Msg], Optional[Exception]):
+    def request(self, event: Event, payload: bytes, timeout = 5, max_retries = 3) -> (Msg | None, Exception | None):
         self.ensure_connection()
         msg = Msg(event=event, payload=payload)
         request = self._requests[msg.uid] = Request()
@@ -340,7 +339,7 @@ class RMQ:
             except Exception as e:
                 LOGGER.error(e)
 
-    def pull(self, queue: str, ttl: int = 0) -> Optional[Message]:
+    def pull(self, queue: str, ttl: int = 0) -> Message | None:
         def build_payload():
             return struct.pack(f">I{len(queue)}sI", len(queue), queue.encode('utf-8'), ttl)
         def decode_payload():
@@ -363,7 +362,7 @@ class RMQ:
             return None
 
     def publish(self,
-                data: Union[str, dict, bytes],
+                data: str | dict | bytes,
                 queue: str,
                 priority: Priority = Priority.NORM):
         def build_payload():

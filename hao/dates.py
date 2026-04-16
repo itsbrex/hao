@@ -88,15 +88,13 @@ def parse(value, timezone='Asia/Shanghai', keep_timezone: bool = False):
     if value is None:
         return None
 
-    value_type = type(value)
-
-    if value_type in [datetime.date, datetime.datetime]:
+    if isinstance(value, (datetime.date, datetime.datetime)):
         return value
 
-    if value_type == float:
+    if isinstance(value, float):
         return epoch_to_datetime(int(value))
 
-    if value_type == int:
+    if isinstance(value, int):
         return epoch_to_datetime(value)
 
     text = value
@@ -201,11 +199,9 @@ def is_future(date, margin_seconds=0) -> bool:
     if date is None:
         return False
     now = datetime.datetime.now()
-    date_type = type(date)
-
-    if str == date_type:
+    if isinstance(date, str):
         time_point = dateparser.parse(date, settings=PARSE_SETTINGS)
-    elif tuple == date_type or list == date_type:
+    elif isinstance(date, (tuple, list)):
         return is_future(date[0], margin_seconds)
     else:
         time_point = date
@@ -217,10 +213,9 @@ def is_past(date, margin_seconds=0) -> bool:
     if date is None:
         return False
     now = datetime.datetime.now()
-    date_type = type(date)
-    if str == date_type:
+    if isinstance(date, str):
         time_point = dateparser.parse(date, settings=PARSE_SETTINGS)
-    elif tuple == date_type or list == date_type:
+    elif isinstance(date, (list, tuple)):
         return is_past(date[0], margin_seconds)
     else:
         time_point = date
@@ -231,12 +226,11 @@ def is_past(date, margin_seconds=0) -> bool:
 def to_epoch_milliseconds(value):
     if value is None:
         return 0
-    value_type = type(value)
-    if value_type == datetime.datetime:
+    if isinstance(value, datetime.datetime):
         return int(value.timestamp() * 1000)
-    if value_type == datetime.date:
+    if isinstance(value, datetime.date):
         return int(date_to_datetime(value).timestamp() * 1000)
-    if value_type == str:
+    if isinstance(value, str):
         value = parse(value)
         return int(value.timestamp() * 1000) if value is not None else None
 

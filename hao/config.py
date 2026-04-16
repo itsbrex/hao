@@ -3,7 +3,6 @@ import os
 import socket
 import traceback
 from importlib.resources import open_text
-from typing import Optional, Union
 
 import yaml
 
@@ -136,11 +135,11 @@ def get_config_dir():
     return os.path.join(root_path, 'conf')
 
 
-def config_from(config_file_name, module: Optional[str] = None):
+def config_from(config_file_name, module: str | None = None):
     return get_config(config_file_name, module)
 
 
-def get_config(config: Optional[Union[str, Config]] = None, module: Optional[str] = None):
+def get_config(config: str | Config | None = None, module: str | None = None):
     if config is None:
         cfg = Config()
     elif isinstance(config, str):
@@ -154,13 +153,13 @@ def get_config(config: Optional[Union[str, Config]] = None, module: Optional[str
 
 def get(name,
         default_value=None,
-        config: Optional[Union[str, Config]] = None,
-        module: Optional[str] = None) -> Optional[Union[str, int, float, list, map, dict]]:
+        config: str | Config | None = None,
+        module: str | None = None) -> str | int | float | list | map | dict | None:
     return get_config(config, module).get(name, default_value)
 
 
 def get_path(name,
              default_value=None,
-             config: Optional[Union[str, Config]] = None,
-             module: Optional[str] = None):
+             config: str | Config | None = None,
+             module: str | None = None):
     return get_config(config, module).get_path(name, default_value)

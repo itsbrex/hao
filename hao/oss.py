@@ -5,13 +5,12 @@
 ####################################################
 pip install oss2
 """
-import collections
 import configparser
 import logging
 import os
 import random
 import sys
-from typing import List, Optional, Union
+from collections import defaultdict
 
 import oss2
 import requests
@@ -172,8 +171,8 @@ class OSS(object):
         else:
             bucket.delete_object(path_oss)
 
-    def delete_files(self, oss_paths: List[str]):
-        batch = collections.defaultdict(list)
+    def delete_files(self, oss_paths: list[str]):
+        batch = defaultdict(list)
         for path_oss in oss_paths:
             bucket_name, path_oss = self._split_oss_path(path_oss)
             batch[bucket_name].append(path_oss)
@@ -280,7 +279,7 @@ def file_crc64(file_name, block_size=64 * 1024, init_crc=0):
 def download_cli():
     args = sys.argv
     if len(args) != 3:
-        LOGGER.warn(f'Usage: h-oss-download oss://bucket/your/path local/path')
+        LOGGER.warn('Usage: h-oss-download oss://bucket/your/path local/path')
         return
     path_oss = args[1]
     path_local = args[2]
@@ -290,7 +289,7 @@ def download_cli():
 def upload_cli():
     args = sys.argv
     if len(args) != 3:
-        LOGGER.warn(f'Usage: h-oss-upload local/path oss://bucket/your/path')
+        LOGGER.warn('Usage: h-oss-upload local/path oss://bucket/your/path')
         return
     path_local = args[1]
     path_oss = args[2]
@@ -300,9 +299,9 @@ def upload_cli():
 def init(key='oss.init',
          overwrite: bool = False,
          oss_keys='oss.keys',
-         default: Union[list, dict] = None,
-         config: Optional[Union[str, Config]] = None,
-         module: Optional[str] = None):
+         default: list | dict = None,
+         config: str | Config | None = None,
+         module: str | None = None):
     """
     Download from oss to local according to `oss.init` in config yml, which should be
         - a dict

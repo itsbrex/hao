@@ -61,7 +61,7 @@ for msg in rabbit.consume(queue_name, timeout=1):
 """
 import atexit
 import threading
-from typing import Generator, Optional, Tuple, Union
+from collections.abc import Generator
 
 from amqp import UnexpectedFrame
 from kombu import Connection
@@ -83,7 +83,7 @@ class Rabbit(object):
         self.__conf = config.get(f"rabbit.{self.profile}", {})
         assert len(self.__conf) > 0, f'rabbit profile not configured `rabbit.{self.profile}`'
         self.prefetch = prefetch
-        self._conn: Optional[Connection] = None
+        self._conn: Connection | None = None
         self._queues = {}
         self._queue_options = {}
         self.__lock__ = threading.Lock()
@@ -143,7 +143,7 @@ class Rabbit(object):
         self.close()
         self.ensure_connection()
 
-    def get_queue(self, queue_id: str = None) -> Tuple[Optional[SimpleQueue], str]:
+    def get_queue(self, queue_id: str = None) -> tuple[SimpleQueue | None, str]:
         self.ensure_connection()
         if queue_id is None:
             queue_id = list(self._queue_options)[0]
@@ -186,7 +186,7 @@ class Rabbit(object):
         return True
 
     def publish(self,
-                message: Union[str, dict, list],
+                message: str | dict | list,
                 queue_id: str = None,
                 prior: bool = False,
                 retry: bool = True,
@@ -223,7 +223,7 @@ class Rabbit(object):
         except (BrokenPipeError, ConnectionResetError, OSError):
             self.reconnect()
 
-    def pull(self, queue_id: str = None, timeout=5, block=True) -> Optional[Message]:
+    def pull(self, queue_id: str = None, timeout=5, block=True) -> Message | None:
         queue, queue_id = self.get_queue(queue_id)
         if queue is None:
             return None

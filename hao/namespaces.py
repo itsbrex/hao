@@ -2,8 +2,8 @@
 import argparse
 import copy
 import sys
+from collections.abc import Callable
 from pprint import pformat
-from typing import Callable, Dict, Optional, Union
 
 from . import args, envs
 from .config import Config, get_config
@@ -42,10 +42,10 @@ attr = Attr
 def from_args(_cls=None,
               prefix=None,
               adds=None,
-              config: Optional[Union[str, Config]] = None,
-              module: Optional[str] = None,
-              key: Optional[str] = None,
-              loader: Optional[Callable] = None,
+              config: str | Config | None = None,
+              module: str | None = None,
+              key: str | None = None,
+              loader: Callable | None = None,
               cache: bool = False):
     """
     resolves args from: command line / constructor / env / config / loader / defaults (by order).
@@ -308,7 +308,7 @@ def from_args(_cls=None,
         return wrapper(_cls)
 
 
-def attrs(clz: type) -> Dict[str, Attr]:
+def attrs(clz: type) -> dict[str, Attr]:
     items = {}
     for cls in reversed(clz.__mro__):
         items.update({

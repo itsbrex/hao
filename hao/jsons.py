@@ -31,8 +31,7 @@ def dumps(data):
 
 
 def prettify(data, sort_keys=False, indent=2, separators=(',', ': ')):
-    data_type = type(data)
-    if data_type == dict:
+    if isinstance(data, dict):
         return json.dumps(
             data,
             sort_keys=sort_keys,
@@ -62,7 +61,7 @@ def prettify(data, sort_keys=False, indent=2, separators=(',', ': ')):
             )
         except Exception as err:
             LOGGER.error(err)
-            LOGGER.error(f'not supported type: {data_type}: {data}')
+            LOGGER.error(f'not supported type: {type(data)}: {data}')
             return None
 
 

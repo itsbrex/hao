@@ -5,7 +5,7 @@ import logging
 import signal
 import threading
 import time
-import typing
+from collections.abc import Callable
 
 from decorator import decorator
 
@@ -136,7 +136,7 @@ def background(func, *a, **kw):
 
 
 @decorator
-def timeout(func: typing.Callable, seconds=5, timeout_exception=TimeoutError, message=None, *a, **kw):
+def timeout(func: Callable, seconds=5, timeout_exception=TimeoutError, message=None, *a, **kw):
     """
     NOT work for windows, signal not supported??!!
     """

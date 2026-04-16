@@ -4,7 +4,6 @@ import inspect
 import os
 import sys
 import types
-import typing
 from glob import glob
 from pathlib import Path
 
@@ -113,7 +112,7 @@ def set_temp_dir(path: str = '~/.temp') -> bool:
     return True
 
 
-def get(*paths, search_paths: typing.Optional[typing.Union[str, typing.List[str]]] = None):
+def get(*paths, search_paths: str | list[str] | None = None):
     if paths is None or len(paths) == 0:
         return ''
     paths = list(filter(None, paths))

@@ -4,7 +4,6 @@ import json
 import logging
 import traceback
 from datetime import datetime
-from typing import Union
 
 import requests
 
@@ -29,7 +28,7 @@ _VERSION = versions.get_version() or 'dev'
 
 
 @decorators.background
-def notify(message: Union[str, dict]):
+def notify(message: str | dict):
     if message is None:
         return
 
@@ -54,7 +53,7 @@ def notify(message: Union[str, dict]):
         LOGGER.debug(e)
 
 
-def notify_exception(e: Exception, message: Union[str, dict] = None):
+def notify_exception(e: Exception, message: str | dict = None):
     if message is None:
         message = {}
     elif isinstance(message, str):

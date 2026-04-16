@@ -2,8 +2,6 @@
 """
 http://www.stats.gov.cn/sj/tjbz/qhdm/
 """
-from typing import List, Optional
-
 import regex
 
 TYPE_PROVINCE = 'province'
@@ -16,9 +14,9 @@ P_NORMALIZE = regex.compile(r'(?:省|市|盟|地区|县)$')
 
 class PlacePath:
     def __init__(self, place: 'Place') -> None:
-        self.province: Optional['Place'] = None
-        self.city: Optional['Place']  = None
-        self.county: Optional['Place']  = None
+        self.province: 'Place' | None = None
+        self.city: 'Place' | None  = None
+        self.county: 'Place' | None = None
         self.populate(place)
 
     def populate(self, place: 'Place'):
@@ -44,17 +42,17 @@ class Place:
     def __init__(self,
                  _id: str,
                  name: str,
-                 shorts: Optional[List[str]] = None,
+                 shorts: list[str] | None = None,
                  children_type: str = None,
-                 children: Optional[List] = None,
+                 children: list | None = None,
                  enabled: bool = True) -> None:
         super().__init__()
         self.id: str = _id
         self.name: str = name
-        self.shorts: Optional[List[str]] = shorts
-        self.parent: Optional[Place] = None
+        self.shorts: list[str] | None = shorts
+        self.parent: Place | None = None
         self.children_type = children_type
-        self.children: Optional[List[Place]] = children
+        self.children: list[Place] | None = children
         if children is not None and len(children) > 0:
             for child in children:
                 child.set_parent(self)

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from typing import Optional
-
 import regex
 from charset_normalizer import from_bytes
 
@@ -198,7 +196,7 @@ def guess_encoding(html_text):
     return fix_encoding_name(encodding.encoding)
 
 
-def fix_encoding(text: str, encoding: Optional[str] = None):
+def fix_encoding(text: str, encoding: str | None = None):
     encodings = lists.uniquify([encoding] + FIXING_ENCODINGS)
     for encoding in encodings:
         try:

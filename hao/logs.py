@@ -4,7 +4,6 @@ import os
 import sys
 from datetime import datetime
 from logging import handlers as logging_handlers
-from typing import Dict, List, Optional
 
 from . import args, config, invoker, paths
 
@@ -16,7 +15,7 @@ LOGGER_DIR = config.get_path('logger.dir', 'data/logs')
 class Handlers:
     def __init__(self) -> None:
         self._app_name = paths.program_name()
-        self._handlers: Dict[str, logging.Handler] = {}
+        self._handlers: dict[str, logging.Handler] = {}
         self._load()
         self._default_handlers = self.get_handlers(['stdout', 'log-to'])
 
@@ -29,13 +28,13 @@ class Handlers:
             print(f"[logger] handler not found in configure: {name}")
         return handler
 
-    def get_handlers(self, names: Optional[List[str]] = None):
+    def get_handlers(self, names: list[str] | None = None):
         if not names:
             return self._default_handlers
         return list(filter(None, [self.get_handler(name) for name in set(names) if name]))
 
     @staticmethod
-    def get_formatter(fmt: Optional[str] = None):
+    def get_formatter(fmt: str | None = None):
         return logging.Formatter(fmt) if fmt else LOGGER_FORMATTER
 
     @staticmethod
@@ -138,7 +137,7 @@ class Loggers:
             'level': self._default_level,
             'handlers': self._loggers_config.get('root', {}).get('handlers', ['stdout', 'log-to']),
         }
-        self._loggers: Dict[str, logging.Logger] = self._load()
+        self._loggers: dict[str, logging.Logger] = self._load()
         self.update_imported_modules()
 
     def _get_logger_config(self, name):
@@ -174,13 +173,13 @@ class Loggers:
 
         return _logger
 
-    def _load(self) -> Dict[str, logging.Logger]:
-        loggers: Dict[str, logging.Logger] = {}
+    def _load(self) -> dict[str, logging.Logger]:
+        loggers: dict[str, logging.Logger] = {}
         for name in self._loggers_config:
             loggers[name] = self._get_logger(name)
         return loggers
 
-    def get_logger(self, name: str, level: Optional[str] = None):
+    def get_logger(self, name: str, level: str | None = None):
         logger = self._loggers.get(name)
         if logger and level:
             logger.setLevel(level)

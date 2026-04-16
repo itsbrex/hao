@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import collections
 import threading
-from typing import Callable, DefaultDict
+from collections.abc import Callable, defaultdict
 
 import requests
 
@@ -47,7 +46,7 @@ class SimpleMetrics(exits.OnExit):
         super().__init__()
         self._logger = logger or LOGGER
         self._interval = interval
-        self._meters: DefaultDict[str, SimpleCounter] = collections.defaultdict(SimpleCounter)
+        self._meters: dict[str, SimpleCounter] = defaultdict(SimpleCounter)
         self._gauges = {}
         self._reporter = threads.PeriodicalTask(interval, self._report)
         self._n_cycle = 0
@@ -66,7 +65,7 @@ class SimpleMetrics(exits.OnExit):
             self._reporter.stop()
 
     def reset(self):
-        self._meters: DefaultDict[str, SimpleCounter] = collections.defaultdict(SimpleCounter)
+        self._meters: dict[str, SimpleCounter] = defaultdict(SimpleCounter)
         self._n_cycle = 0
 
     def on_exit(self):
