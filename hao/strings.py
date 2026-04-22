@@ -13,7 +13,8 @@ import regex
 
 from . import jsons, lists
 
-RE_BACKSPACES = regex.compile("\b+")
+P_BACKSPACES = regex.compile("\b+")
+P_ERRANT_SPACE = regex.compile(r'(?<![a-zA-Z0-9.,;:!?)\]}]) | (?![a-zA-Z0-9])')
 PUNCTUATION_ZH = '＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､\u3000、〃〈〉《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏﹑﹔·！？｡。'
 
 RE_NORMALIZE = [
@@ -161,12 +162,22 @@ def fix_encoding(text: str, encoding: str) -> Optional[str]:
     return text
 
 
+def fix_spaces(text: str) -> str:
+    text = ' '.join(text.split())
+    prev = None
+    while prev != text:
+        prev = text
+        text = P_ERRANT_SPACE.sub('', text)
+    return text
+
+
+
 def strip_to_empty(text: str):
     if text is None:
         return ''
     text = str(text)
     text = text.strip()
-    text = RE_BACKSPACES.sub('', text)
+    text = P_BACKSPACES.sub('', text)
     if text == 'None':
         return ''
     return text
@@ -177,7 +188,7 @@ def strip_to_none(text: str):
         return None
     text = str(text)
     text = text.strip()
-    text = RE_BACKSPACES.sub('', text)
+    text = P_BACKSPACES.sub('', text)
     if len(text) == 0:
         return None
     if text in ('None', 'none', 'NONE'):
